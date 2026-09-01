@@ -33,6 +33,7 @@
       letter-spacing: 2px;
       color: var(--accent-color);
       text-align: center;
+      margin-top: 0;
       margin-bottom: 20px;
     }
 
@@ -42,16 +43,26 @@
       border-radius: 8px;
       border: 1px solid var(--border-color);
       width: 100%;
-      max-width: 600px;
+      max-width: 900px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.3);
       box-sizing: border-box;
       margin-bottom: 20px;
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
     }
 
     .form-group {
       margin-bottom: 15px;
       display: flex;
       flex-direction: column;
+    }
+
+    .form-group.full-width {
+      grid-column: span 2;
     }
 
     label {
@@ -75,6 +86,7 @@
       cursor: pointer;
       border: none;
       margin-top: 10px;
+      width: 100%;
       transition: background-color 0.2s;
     }
 
@@ -82,10 +94,25 @@
       background-color: #c9302c;
     }
 
+    .btn-secondary {
+      background-color: #555;
+    }
+
+    .btn-secondary:hover {
+      background-color: #666;
+    }
+
+    .action-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
     .result-container {
       display: none;
       width: 100%;
-      max-width: 800px;
+      max-width: 900px;
       background-color: var(--card-bg);
       padding: 20px;
       border-radius: 8px;
@@ -94,16 +121,19 @@
       box-sizing: border-box;
     }
 
-    .section {
-      margin-bottom: 25px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid var(--border-color);
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
     }
 
-    .section:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
+    .full-width {
+      grid-column: span 2;
+    }
+
+    .section {
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
     }
 
     .section h2 {
@@ -115,6 +145,7 @@
 
     .deploy-img {
       max-width: 100%;
+      max-height: 400px;
       height: auto;
       border-radius: 4px;
       border: 1px solid var(--border-color);
@@ -122,79 +153,129 @@
       margin: 10px auto;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       body {
         padding: 10px;
+      }
+      .controls-grid, .results-grid, .action-buttons {
+        grid-template-columns: 1fr;
+      }
+      .form-group.full-width, .full-width {
+        grid-column: span 1;
       }
     }
   </style>
 </head>
 <body>
 
-  <h1>Générateur de Scénario Necromunda</h1>
+  <h1 id="main-title">Générateur de Scénario Necromunda</h1>
 
-  <div class="controls">
-    <div class="form-group">
-      <label for="attacker-house">Maison du Joueur Attaquant :</label>
-      <select id="attacker-house">
-        <option value="general">Missions généralistes</option>
-        <option value="escher">Maison Escher</option>
-        <option value="goliath">Maison Goliath</option>
-        <option value="orlock">Maison Orlock</option>
-        <option value="delaque">Maison Delaque</option>
-        <option value="vansaar">Maison Van Saar</option>
-        <option value="cawdor">Maison Cawdor</option>
-      </select>
-    </div>
+  <div id="controls-block" class="controls">
+    <div class="controls-grid">
+      <div class="form-group">
+        <label for="attacker-house">Maison du Joueur Attaquant :</label>
+        <select id="attacker-house">
+          <option value="general">Missions généralistes</option>
+          <option value="escher">Maison Escher</option>
+          <option value="goliath">Maison Goliath</option>
+          <option value="orlock">Maison Orlock</option>
+          <option value="delaque">Maison Delaque</option>
+          <option value="vansaar">Maison Van Saar</option>
+          <option value="cawdor">Maison Cawdor</option>
+        </select>
+      </div>
 
-    <div class="form-group">
-      <label for="defender-house">Maison du Joueur Défenseur :</label>
-      <select id="defender-house">
-        <option value="general">Missions généralistes</option>
-        <option value="escher">Maison Escher</option>
-        <option value="goliath">Maison Goliath</option>
-        <option value="orlock">Maison Orlock</option>
-        <option value="delaque">Maison Delaque</option>
-        <option value="vansaar">Maison Van Saar</option>
-        <option value="cawdor">Maison Cawdor</option>
-      </select>
+      <div class="form-group">
+        <label for="defender-house">Maison du Joueur Défenseur :</label>
+        <select id="defender-house">
+          <option value="general">Missions généralistes</option>
+          <option value="escher">Maison Escher</option>
+          <option value="goliath">Maison Goliath</option>
+          <option value="orlock">Maison Orlock</option>
+          <option value="delaque">Maison Delaque</option>
+          <option value="vansaar">Maison Van Saar</option>
+          <option value="cawdor">Maison Cawdor</option>
+        </select>
+      </div>
+
+      <div class="form-group full-width">
+        <label for="territory-select">Territoire :</label>
+        <select id="territory-select">
+          <!-- Généré automatiquement depuis le tableau JS -->
+        </select>
+      </div>
     </div>
 
     <button onclick="generateScenario()">Générer le Scénario</button>
   </div>
 
   <div id="results" class="result-container">
-    <div class="section">
-      <h2>Déploiement</h2>
-      <img id="deploy-image" class="deploy-img" src="" alt="Déploiement">
+    <div class="action-buttons">
+      <button class="btn-secondary" onclick="resetToMenu()">← Modifier les paramètres</button>
+      <button onclick="generateScenario()">Relancer la génération 🎲</button>
     </div>
 
-    <div class="section">
-      <h2>Mission Principale (Commune)</h2>
-      <h3 id="main-name"></h3>
-      <p id="main-desc"></p>
-    </div>
+    <div class="results-grid">
+      <div class="section full-width">
+        <h2>Territoire</h2>
+        <h3 id="territory-name"></h3>
+        <p id="territory-desc"></p>
+      </div>
 
-    <div class="section">
-      <h2>Mission Secondaire — Attaquant</h2>
-      <h3 id="sec-att-name"></h3>
-      <p id="sec-att-desc"></p>
-    </div>
+      <div class="section full-width">
+        <h2>Déploiement</h2>
+        <img id="deploy-image" class="deploy-img" src="" alt="Déploiement">
+      </div>
 
-    <div class="section">
-      <h2>Mission Secondaire — Défenseur</h2>
-      <h3 id="sec-def-name"></h3>
-      <p id="sec-def-desc"></p>
-    </div>
+      <div class="section full-width">
+        <h2>Mission Principale (Commune)</h2>
+        <h3 id="main-name"></h3>
+        <p id="main-desc"></p>
+      </div>
 
-    <div class="section">
-      <h2>Composition de Liste (Commune)</h2>
-      <h3 id="list-name"></h3>
-      <p id="list-desc"></p>
+      <div class="section">
+        <h2>Mission Secondaire — Attaquant</h2>
+        <h3 id="sec-att-name"></h3>
+        <p id="sec-att-desc"></p>
+      </div>
+
+      <div class="section">
+        <h2>Mission Secondaire — Défenseur</h2>
+        <h3 id="sec-def-name"></h3>
+        <p id="sec-def-desc"></p>
+      </div>
+
+      <div class="section full-width">
+        <h2>Composition de Liste (Commune)</h2>
+        <h3 id="list-name"></h3>
+        <p id="list-desc"></p>
+      </div>
     </div>
   </div>
 
   <script>
+    const territories = [
+      { id: "settlement", name: "Settlement", desc: "Aucun effet particulier au cours de la partie." },
+      { id: "bullet_den", name: "Bullet den", desc: "Une fois par round, tous les gangs peuvent recharger une arme pour une action gratuite." },
+      { id: "rogue_doc", name: "Rogue doc shop", desc: "Quand un guerrier offre son assistance pour un soin, lancer 2 dés de blessure supplémentaires au lieu d'un seul." },
+      { id: "mess_shack", name: "Mess Shack", desc: "Tous les guerriers ont +1 en Ld." },
+      { id: "drinking_hole", name: "Drinking hole", desc: "Aucune arme de tir ne peut être utilisée lors du premier round." },
+      { id: "fence_hangout", name: "Fence hangout", desc: "Les gangs gagnent D3x10 crédits de plus s'ils réussissent leur side job." },
+      { id: "bounty_den", name: "Bounty den", desc: "Chaque gang génère un deuxième side job." },
+      { id: "generatorium", name: "Generatorium", desc: "Durant cette partie, la règle visibilité (X) n'a aucun effet." },
+      { id: "corpse_farm", name: "Corpse farm", desc: "Les gangs gagnent 10 crédits pour chaque ennemi en état out of action." },
+      { id: "tunnels", name: "Tunnels", desc: "Durant cette partie, appliquer la règle tunnel warfare." },
+      { id: "tech_bazaar", name: "Tech bazaar", desc: "Durant cette partie, il est interdit d'utiliser une arme à gabarit ou explosion (3\"/5\")." },
+      { id: "promethium_cache", name: "Promethium cache", desc: "Toutes les armes avec la règle flamme (X+) améliorent X de 1." },
+      { id: "collapsed_dome", name: "Collapsed dome", desc: "Durant cette partie, tout test d'agilité dont le résultat est 1 entraîne une blessure sans sauvegarde." },
+      { id: "bone_shrine", name: "Bone shrine", desc: "Le défenseur place un marqueur dans les 6\" du centre de la table. Les guerriers peuvent gagner de l'XP s'ils contrôlent ce marqueur comme si c'était un objectif." },
+      { id: "mine_workings", name: "Mine workings", desc: "Durant cette partie, la règle visibilité (18\") s'applique." },
+      { id: "gambling_den", name: "Gambling den", desc: "Une fois par partie, chaque joueur peut relancer un unique dé." },
+      { id: "synth_still", name: "Synth still", desc: "Durant cette partie, toutes les armes avec le trait toxine (X+) voient leur AP augmenter de 1." },
+      { id: "old_ruins", name: "Old ruins", desc: "Durant cette partie, tout guerrier à portée longue d'une arme de tir et qui n'est pas à couvert voit sa Sv augmenter de 1." },
+      { id: "fighting_pit", name: "Fighting pit", desc: "Tout guerrier qui cause l'état sérieusement blessé ou out of action à un ennemi gagne 1 XP additionnel." }
+    ];
+
     const deployments = [
       "Scenario 1.png",
       "Scenario 2.png",
@@ -241,6 +322,18 @@
       { name: "Force de reconnaissance", desc: "Les deux gangs utilisent la méthode hybride (D3+5) pour déterminer leur gang de départ." }
     ];
 
+    // Initialisation automatique du menu déroulant des territoires
+    function initTerritoriesMenu() {
+      const select = document.getElementById('territory-select');
+      select.innerHTML = '';
+      territories.forEach(t => {
+        const option = document.createElement('option');
+        option.value = t.id;
+        option.textContent = t.name;
+        select.appendChild(option);
+      });
+    }
+
     function getRandomItem(array) {
       return array[Math.floor(Math.random() * array.length)];
     }
@@ -248,12 +341,17 @@
     function generateScenario() {
       const attHouse = document.getElementById('attacker-house').value;
       const defHouse = document.getElementById('defender-house').value;
+      const selectedTerritoryId = document.getElementById('territory-select').value;
 
+      const selectedTerritory = territories.find(t => t.id === selectedTerritoryId);
       const randomDeploy = getRandomItem(deployments);
       const randomMain = getRandomItem(mainMissions);
       const randomSecAtt = getRandomItem(houseSecondaryMissions[attHouse]);
       const randomSecDef = getRandomItem(houseSecondaryMissions[defHouse]);
       const randomList = getRandomItem(listCompositions);
+
+      document.getElementById('territory-name').innerText = selectedTerritory.name;
+      document.getElementById('territory-desc').innerText = selectedTerritory.desc;
 
       document.getElementById('deploy-image').src = randomDeploy;
       
@@ -269,8 +367,23 @@
       document.getElementById('list-name').innerText = randomList.name;
       document.getElementById('list-desc').innerText = randomList.desc;
 
+      document.getElementById('main-title').style.display = 'none';
+      document.getElementById('controls-block').style.display = 'none';
       document.getElementById('results').style.display = 'block';
+
+      window.scrollTo(0, 0);
     }
+
+    function resetToMenu() {
+      document.getElementById('main-title').style.display = 'block';
+      document.getElementById('controls-block').style.display = 'block';
+      document.getElementById('results').style.display = 'none';
+
+      window.scrollTo(0, 0);
+    }
+
+    // Charger la liste des territoires au lancement de la page
+    initTerritoriesMenu();
   </script>
 </body>
 </html>
