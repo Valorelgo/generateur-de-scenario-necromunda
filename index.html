@@ -143,6 +143,21 @@
       text-transform: uppercase;
     }
 
+    .mission-block {
+      margin-bottom: 15px;
+    }
+
+    .mission-block:last-child {
+      margin-bottom: 0;
+    }
+
+    .mission-block h4 {
+      margin: 0 0 5px 0;
+      color: #ff9f43;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+    }
+
     .deploy-img {
       max-width: 100%;
       max-height: 400px;
@@ -201,7 +216,7 @@
       <div class="form-group full-width">
         <label for="territory-select">Territoire :</label>
         <select id="territory-select">
-          <!-- Généré automatiquement depuis le tableau JS -->
+          <!-- Généré automatiquement -->
         </select>
       </div>
     </div>
@@ -234,15 +249,13 @@
       </div>
 
       <div class="section">
-        <h2>Mission Secondaire — Attaquant</h2>
-        <h3 id="sec-att-name"></h3>
-        <p id="sec-att-desc"></p>
+        <h2>Mission(s) Secondaire(s) — Attaquant</h2>
+        <div id="sec-att-container"></div>
       </div>
 
       <div class="section">
-        <h2>Mission Secondaire — Défenseur</h2>
-        <h3 id="sec-def-name"></h3>
-        <p id="sec-def-desc"></p>
+        <h2>Mission(s) Secondaire(s) — Défenseur</h2>
+        <div id="sec-def-container"></div>
       </div>
 
       <div class="section full-width">
@@ -322,7 +335,6 @@
       { name: "Force de reconnaissance", desc: "Les deux gangs utilisent la méthode hybride (D3+5) pour déterminer leur gang de départ." }
     ];
 
-    // Initialisation automatique du menu déroulant des territoires
     function initTerritoriesMenu() {
       const select = document.getElementById('territory-select');
       select.innerHTML = '';
@@ -338,16 +350,41 @@
       return array[Math.floor(Math.random() * array.length)];
     }
 
+    // Tirage de N missions uniques dans une liste donnée
+    function getRandomMissions(array, count = 1) {
+      const shuffled = [...array].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count);
+    }
+
+    function renderMissions(containerId, missions) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      missions.forEach((m, idx) => {
+        const block = document.createElement('div');
+        block.className = 'mission-block';
+        
+        const titleHtml = missions.length > 1 ? `<h4>Mission ${idx + 1}</h4>` : '';
+        block.innerHTML = `
+          ${titleHtml}
+          <h3 style="margin: 0 0 5px 0;">${m.name}</h3>
+          <p style="margin: 0;">${m.desc}</p>
+        `;
+        container.appendChild(block);
+      });
+    }
+
     function generateScenario() {
       const attHouse = document.getElementById('attacker-house').value;
       const defHouse = document.getElementById('defender-house').value;
       const selectedTerritoryId = document.getElementById('territory-select').value;
 
       const selectedTerritory = territories.find(t => t.id === selectedTerritoryId);
+      const countSecondary = (selectedTerritoryId === 'bounty_den') ? 2 : 1;
+
       const randomDeploy = getRandomItem(deployments);
       const randomMain = getRandomItem(mainMissions);
-      const randomSecAtt = getRandomItem(houseSecondaryMissions[attHouse]);
-      const randomSecDef = getRandomItem(houseSecondaryMissions[defHouse]);
+      const randomSecAtt = getRandomMissions(houseSecondaryMissions[attHouse], countSecondary);
+      const randomSecDef = getRandomMissions(houseSecondaryMissions[defHouse], countSecondary);
       const randomList = getRandomItem(listCompositions);
 
       document.getElementById('territory-name').innerText = selectedTerritory.name;
@@ -358,11 +395,8 @@
       document.getElementById('main-name').innerText = randomMain.name;
       document.getElementById('main-desc').innerText = randomMain.desc;
 
-      document.getElementById('sec-att-name').innerText = randomSecAtt.name;
-      document.getElementById('sec-att-desc').innerText = randomSecAtt.desc;
-
-      document.getElementById('sec-def-name').innerText = randomSecDef.name;
-      document.getElementById('sec-def-desc').innerText = randomSecDef.desc;
+      renderMissions('sec-att-container', randomSecAtt);
+      renderMissions('sec-def-container', randomSecDef);
 
       document.getElementById('list-name').innerText = randomList.name;
       document.getElementById('list-desc').innerText = randomList.desc;
@@ -382,7 +416,6 @@
       window.scrollTo(0, 0);
     }
 
-    // Charger la liste des territoires au lancement de la page
     initTerritoriesMenu();
   </script>
 </body>
